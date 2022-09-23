@@ -14,6 +14,41 @@ ventana = pygame.display.set_mode((1280,720));
 pygame.display.set_caption("Magic with Luna");
 fontTitle = pygame.font.SysFont("Bodoni MT",68)
 fuenteBotones = pygame.font.SysFont("Bahnschrift",24)
+fuenteTexto = pygame.font.SysFont("Arial",20)
+
+def accion(boton):
+    
+    if boton == "Iniciar":
+        Juego()
+
+    if boton == "Salir":
+        Salir()
+
+class Boton():
+	def __init__(self, image, x_pos, y_pos, text_input):
+		self.image = image
+		self.x_pos = x_pos
+		self.y_pos = y_pos
+		self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+		self.text_input = text_input
+		self.text = fuenteBotones.render(self.text_input, True, "white")
+		self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+
+	def update(self):
+		ventana.blit(self.image, self.rect)
+		ventana.blit(self.text, self.text_rect)
+
+	def checkForInput(self, position):
+		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+			accion(self.text_input)
+
+	def changeColor(self, position):
+		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+			self.text = fuenteBotones.render(self.text_input, True, "green")
+		else:
+			self.text = fuenteBotones.render(self.text_input, True, "white")
+
+
 
 def texto(text, font, color, surface, x, y): #esta funcion permite poner texto en pantalla
     textobj = font.render(text, 1, color)
@@ -35,15 +70,14 @@ def menu():
 
         mouse = pygame.mouse.get_pos(); # con esto se obtiene la posicion del mouse
 
-        
+        imagenBoton = pygame.image.load("./src/imagenes/Boton.png")
+        imagenBoton = pygame.transform.scale(imagenBoton, (200, 50))
 
-        botonIniciar = pygame.Rect(50, 100 , 200, 50)
-        textBtIni = fuenteBotones.render('Jugar', 1, (136, 255, 0))
-        botonSalir = pygame.Rect(50, 200 , 200, 50)
-        # botonIniciar.blit(textBtIni,(0,0))
+        botonIniciar = Boton(imagenBoton, 150, 200, "Iniciar")
+        botonIniciar.update()
 
-        pygame.draw.rect(ventana, (255,0,0), botonIniciar)
-        pygame.draw.rect(ventana, (255,0,0), botonSalir)
+        botonSalir = Boton(imagenBoton, 150,300, "Salir")
+        botonSalir.update()
 
         for evento in pygame.event.get():
             if evento.type == QUIT:
@@ -52,23 +86,27 @@ def menu():
             if evento.type == K_ESCAPE:
                 pygame.quit()
             
+            if evento.type == MOUSEBUTTONDOWN:
+                botonIniciar.checkForInput(pygame.mouse.get_pos())
+                botonSalir.checkForInput(pygame.mouse.get_pos())
+            
         
         pygame.display.update();
         reloj.tick(60);
 
-        if botonIniciar.collidepoint(mouse):
-            if evento.type == MOUSEBUTTONDOWN:
-                if evento.button == 1:
-                    Juego()
-        if botonSalir.collidepoint(mouse):
-            if evento.type == MOUSEBUTTONDOWN:
-                if evento.button == 1:
-                    Salir()
+
+        
 def Juego():
     running = True
+    contexto = ""
+    numContexto = 0
+    if numContexto == 0:
+        contexto = "Despiertas en un bosque en medio de la noche, no recuerdas exactamente como llegaste."
+        
+
     while running:
-        ventana.fill((0,0,0))
-        texto("Juego",fontTitle, (255,255,255) , ventana , 20, 20)
+        ventana.fill((0,0,0))   
+        texto(contexto ,fuenteTexto, (255,255,255) , ventana , 420, 360)
         for evento in pygame.event.get():
             if evento.type == QUIT:
                 pygame.quit()
