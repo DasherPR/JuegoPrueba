@@ -2,52 +2,50 @@ import pygame
 from pygame.locals import *
 from pygame import mixer_music , mixer
 
-reloj = pygame.time.Clock()
-pygame.init();
+reloj = pygame.time.Clock() 
+pygame.init(); #Con esto se inician los modulos de python
 
-mixer.init();
-mixer.music.load("./src/music/ALonelyCherryTree-.wav")
-mixer.music.set_volume(0.5)
-mixer.music.play()
+mixer.init(); #con esto se inicia el reproductor de musica
+mixer.music.load("./src/music/ALonelyCherryTree-.wav") #aqui se carga la musica
+mixer.music.set_volume(0.2) # aqui se ajusta el volumen de la musica
+mixer.music.play() # con esto se reproduce la musica
 
-ventana = pygame.display.set_mode((1280,720));
-pygame.display.set_caption("Magic with Luna");
-fontTitle = pygame.font.SysFont("Bodoni MT",68)
-fuenteBotones = pygame.font.SysFont("Bahnschrift",24)
-fuenteTexto = pygame.font.SysFont("Arial",20)
+ventana = pygame.display.set_mode((1280,720)); #esto define el tamaño de la pantalla
+pygame.display.set_caption("Magic with Luna"); #esto pone el nombre de la ventana
+fontTitle = pygame.font.SysFont("Bodoni MT",68) # esta es la fuente del titulo del juego
+fuenteBotones = pygame.font.SysFont("Bahnschrift",24) # esta es la fuente para los botones
+fuenteTexto = pygame.font.SysFont("Arial",20) # esta es la fuente para el texto
+numContexto = 0
 
-def accion(boton):
-    
+def accion(boton): # esta funcion permite dar diferentes funciones a los botones segun su texto
+    global numContexto
+
     if boton == "Iniciar":
         Juego()
 
     if boton == "Salir":
         Salir()
 
-class Boton():
-	def __init__(self, image, x_pos, y_pos, text_input):
-		self.image = image
-		self.x_pos = x_pos
-		self.y_pos = y_pos
-		self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
-		self.text_input = text_input
-		self.text = fuenteBotones.render(self.text_input, True, "white")
-		self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+    if boton == "Siguiente":
+        numContexto = numContexto +1
 
-	def update(self):
+class Boton(): #esta clase tuve que buscarla para facilitarme el hacer botones
+	def __init__(self, image, x_pos, y_pos, text_input): #con esto se definen cosas que se le tendran que dar al objeto boton
+		self.image = image #esta es la imagen que se le dara al boton
+		self.x_pos = x_pos #esta esl a posicion en x del boton
+		self.y_pos = y_pos #esta es la posicion en y del boton
+		self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos)) #esto centra la imagen
+		self.text_input = text_input #esto dice que sera el texto del boton
+		self.text = fuenteBotones.render(self.text_input, True, "white") #esto muestra como se mostrar el texto del boton
+		self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos)) #esto centra el texto
+
+	def update(self): #esto permite que el boton se muestre en la ventana
 		ventana.blit(self.image, self.rect)
 		ventana.blit(self.text, self.text_rect)
 
-	def checkForInput(self, position):
+	def checkForInput(self, position): #esto hace que cuando se presione el boton se realice la accion de abajo
 		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
 			accion(self.text_input)
-
-	def changeColor(self, position):
-		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
-			self.text = fuenteBotones.render(self.text_input, True, "green")
-		else:
-			self.text = fuenteBotones.render(self.text_input, True, "white")
-
 
 
 def texto(text, font, color, surface, x, y): #esta funcion permite poner texto en pantalla
@@ -56,57 +54,97 @@ def texto(text, font, color, surface, x, y): #esta funcion permite poner texto e
     textrect.topleft = (x,y)
     surface.blit(textobj, textrect)
 
-def menu():
+def VariasLineas(surf, text, renderer, color, x, y): #esta funcion permite poner varias lineas de texto
+    h = renderer.get_height()
+    lineas = text.split('\n')
+    for i, ll in enumerate(lineas):
+        txt_surface = renderer.render(ll, True, color)
+        surf.blit(txt_surface, (x, y+(i*h)))
+
+
+def menu(): #esta funcion es el menu principal para el juego
     while True:
-        ventana.fill((0,0,0))
+        ventana.fill((0,0,0)) #esto llena la ventana de color negro
 
         # Esto es para poner el fondo del menu
-        fondo = pygame.image.load("./src/imagenes/fondoMenu.png")
+        fondo = pygame.image.load("./src/imagenes/fondoMenu.png") 
         fondoTam = pygame.transform.scale(fondo,(720,720)); #esto pone la imagen del tamaño necesario
-        ventana.blit(fondoTam, (280, 0))
+        ventana.blit(fondoTam, (280, 0)) #esto muestra la imagen en la ventana
 
-        texto("Magic with Luna", fontTitle , (255,255,255) , ventana, 420, 600)
+        texto("Magic with Luna", fontTitle , (255,255,255) , ventana, 420, 600) #este es el titulo del juego
 
+        imagenBoton = pygame.image.load("./src/imagenes/Boton.png") #esta es la imagen del boton
+        imagenBoton = pygame.transform.scale(imagenBoton, (200, 50)) #este es el tamaño de la imagen del boton
 
-        mouse = pygame.mouse.get_pos(); # con esto se obtiene la posicion del mouse
-
-        imagenBoton = pygame.image.load("./src/imagenes/Boton.png")
-        imagenBoton = pygame.transform.scale(imagenBoton, (200, 50))
-
-        botonIniciar = Boton(imagenBoton, 150, 200, "Iniciar")
-        botonIniciar.update()
+        botonIniciar = Boton(imagenBoton, 150, 200, "Iniciar") #este es un boton creado a partir del objeto iniciar
+        botonIniciar.update() #con esto se muestra el boton en la pantalla
 
         botonSalir = Boton(imagenBoton, 150,300, "Salir")
         botonSalir.update()
 
-        for evento in pygame.event.get():
-            if evento.type == QUIT:
+        for evento in pygame.event.get(): #esto permite detectar que eventos ocurren
+            if evento.type == QUIT: #cuando se cierre el juego se detiene pygame
                 pygame.quit()
             
-            if evento.type == K_ESCAPE:
+            if evento.type == K_ESCAPE: 
                 pygame.quit()
             
-            if evento.type == MOUSEBUTTONDOWN:
+            if evento.type == MOUSEBUTTONDOWN: #cuando se presiona se verifica que boton fue pulsado
                 botonIniciar.checkForInput(pygame.mouse.get_pos())
                 botonSalir.checkForInput(pygame.mouse.get_pos())
             
         
-        pygame.display.update();
-        reloj.tick(60);
+        pygame.display.update(); #esto actualiza la pantalla
+        reloj.tick(60); 
 
 
-        
-def Juego():
+def Juego(): #esta es la pantalla para el juego
     running = True
     contexto = ""
-    numContexto = 0
-    if numContexto == 0:
-        contexto = "Despiertas en un bosque en medio de la noche, no recuerdas exactamente como llegaste."
+    global numContexto
+
         
 
     while running:
         ventana.fill((0,0,0))   
-        texto(contexto ,fuenteTexto, (255,255,255) , ventana , 420, 360)
+        if numContexto == 0:
+            contexto = "Despiertas en un bosque en medio de la noche, no recuerdas exactamente como llegaste. \nA tu lado puedes observar tu celular que se encuentra roto."
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 300)
+        if numContexto == 1:
+            contexto = "Intentas encender tu celular, pero no funciona. \n Decides levantarte"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 300)
+        if numContexto == 2:
+            contexto = "A lo lejos ves una figura observandote"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
+            figura = pygame.image.load("./src/imagenes/figuraBosque.png") 
+            figuraTam = pygame.transform.scale(figura,(640,640)); #esto pone la imagen del tamaño necesario
+            ventana.blit(figuraTam, (280, 80))
+        if numContexto == 3:
+            contexto = "Pero al parpadear ya no esta..."
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
+            figura = pygame.image.load("./src/imagenes/noFiguraBosque.png") 
+            figuraTam = pygame.transform.scale(figura,(640,640)); #esto pone la imagen del tamaño necesario
+            ventana.blit(figuraTam, (280, 80))
+        if numContexto == 4:
+            contexto = "Por lo que decides centrarte en la pregunta importante...\n¿Que haces aquí?"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 300)
+        if numContexto == 5:
+            contexto = "Observas de nuevo al suelo y te fijas de que hay algo nuevo"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
+            figura = pygame.image.load("./src/imagenes/SueloObjetos.png") 
+            figuraTam = pygame.transform.scale(figura,(640,640)); #esto pone la imagen del tamaño necesario
+            ventana.blit(figuraTam, (280, 80))
+        if numContexto == 6:
+            contexto = "Tomaste el palo en tus manos, ¡resulta que es una varita!"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
+            figura = pygame.image.load("./src/imagenes/varitaManos.png") 
+            figuraTam = pygame.transform.scale(figura,(640,640)); #esto pone la imagen del tamaño necesario
+            ventana.blit(figuraTam, (280, 80))
+
+        imagenBoton = pygame.image.load("./src/imagenes/Boton.png")
+        imagenBoton = pygame.transform.scale(imagenBoton, (200, 50))
+        botonSiguiente = Boton(imagenBoton, 640, 690, "Siguiente")
+        botonSiguiente.update()
         for evento in pygame.event.get():
             if evento.type == QUIT:
                 pygame.quit()
@@ -115,10 +153,14 @@ def Juego():
             if evento.type == K_ESCAPE:
                 running = False
             
+            if evento.type == MOUSEBUTTONDOWN:
+                botonSiguiente.checkForInput(pygame.mouse.get_pos())
+                #numContexto = numContexto + 1 | en una version anterior se cambiaba con solo el clic del mouse,p or lo que tuve que moverlo de ahi
+            
         pygame.display.update();
         reloj.tick(60);
 
-def Salir():
+def Salir(): #con esto si se le da al boton salir se cierra el juego
     pygame.quit()
             
-menu()
+menu() #esto permite que se muestre el menu principal al iniciar el programa.
