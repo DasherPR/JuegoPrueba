@@ -27,7 +27,22 @@ def accion(boton): # esta funcion permite dar diferentes funciones a los botones
         Salir()
 
     if boton == "Siguiente":
-        numContexto = numContexto +1
+        numContexto = numContexto + 1
+    
+    if boton == "Creditos":
+        Creditos()
+    
+    if boton == "Volver":
+        menu()
+    
+    if boton == "Opcion A":
+        numContexto = numContexto + 1
+    
+    if boton == "Opcion B":
+        numContexto = numContexto + 2
+    
+    if boton == "Continuar":
+        numContexto = numContexto + 2
 
 class Boton(): #esta clase tuve que buscarla para facilitarme el hacer botones
 	def __init__(self, image, x_pos, y_pos, text_input): #con esto se definen cosas que se le tendran que dar al objeto boton
@@ -79,7 +94,10 @@ def menu(): #esta funcion es el menu principal para el juego
         botonIniciar = Boton(imagenBoton, 150, 200, "Iniciar") #este es un boton creado a partir del objeto iniciar
         botonIniciar.update() #con esto se muestra el boton en la pantalla
 
-        botonSalir = Boton(imagenBoton, 150,300, "Salir")
+        botonCreditos = Boton(imagenBoton, 150,300, "Creditos")
+        botonCreditos.update()
+
+        botonSalir = Boton(imagenBoton, 150,400, "Salir")
         botonSalir.update()
 
         for evento in pygame.event.get(): #esto permite detectar que eventos ocurren
@@ -92,6 +110,7 @@ def menu(): #esta funcion es el menu principal para el juego
             if evento.type == MOUSEBUTTONDOWN: #cuando se presiona se verifica que boton fue pulsado
                 botonIniciar.checkForInput(pygame.mouse.get_pos())
                 botonSalir.checkForInput(pygame.mouse.get_pos())
+                botonCreditos.checkForInput(pygame.mouse.get_pos())
             
         
         pygame.display.update(); #esto actualiza la pantalla
@@ -100,51 +119,80 @@ def menu(): #esta funcion es el menu principal para el juego
 
 def Juego(): #esta es la pantalla para el juego
     running = True
+    mixer.music.stop()
+    mixer.init()
+    mixer.music.load("./src/music/LostForest.wav")
+    mixer.music.set_volume(0.01)
+    mixer.music.play()
     contexto = ""
     global numContexto
 
         
 
     while running:
+        imagenBoton = pygame.image.load("./src/imagenes/Boton.png")
+        imagenBoton = pygame.transform.scale(imagenBoton, (200, 50))
+        botonSiguiente = Boton(imagenBoton, 640, 690, "Siguiente")
+        botonContinuar = Boton(imagenBoton, 640, 500, "Continuar")
+        botonA = Boton(imagenBoton, 550 , 600 , "Opcion A")
+        botonB = Boton(imagenBoton, 750 , 600 , "Opcion B")
         ventana.fill((0,0,0))   
+        
+        #todos estos if son simplemente la historia
         if numContexto == 0:
             contexto = "Despiertas en un bosque en medio de la noche, no recuerdas exactamente como llegaste. \nA tu lado puedes observar tu celular que se encuentra roto."
             VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 300)
+            botonSiguiente.update()
         if numContexto == 1:
             contexto = "Intentas encender tu celular, pero no funciona. \n Decides levantarte"
             VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 300)
+            botonSiguiente.update()
         if numContexto == 2:
             contexto = "A lo lejos ves una figura observandote"
             VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
             figura = pygame.image.load("./src/imagenes/figuraBosque.png") 
             figuraTam = pygame.transform.scale(figura,(640,640)); #esto pone la imagen del tamaño necesario
             ventana.blit(figuraTam, (280, 80))
+            botonSiguiente.update()
         if numContexto == 3:
             contexto = "Pero al parpadear ya no esta..."
             VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
             figura = pygame.image.load("./src/imagenes/noFiguraBosque.png") 
             figuraTam = pygame.transform.scale(figura,(640,640)); #esto pone la imagen del tamaño necesario
             ventana.blit(figuraTam, (280, 80))
+            botonSiguiente.update()
         if numContexto == 4:
             contexto = "Por lo que decides centrarte en la pregunta importante...\n¿Que haces aquí?"
             VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 300)
+            botonSiguiente.update()
         if numContexto == 5:
             contexto = "Observas de nuevo al suelo y te fijas de que hay algo nuevo"
             VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
             figura = pygame.image.load("./src/imagenes/SueloObjetos.png") 
             figuraTam = pygame.transform.scale(figura,(640,640)); #esto pone la imagen del tamaño necesario
             ventana.blit(figuraTam, (280, 80))
+            botonSiguiente.update()
         if numContexto == 6:
             contexto = "Tomaste el palo en tus manos, ¡resulta que es una varita!"
             VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
             figura = pygame.image.load("./src/imagenes/varitaManos.png") 
             figuraTam = pygame.transform.scale(figura,(640,640)); #esto pone la imagen del tamaño necesario
             ventana.blit(figuraTam, (280, 80))
-
-        imagenBoton = pygame.image.load("./src/imagenes/Boton.png")
-        imagenBoton = pygame.transform.scale(imagenBoton, (200, 50))
-        botonSiguiente = Boton(imagenBoton, 640, 690, "Siguiente")
-        botonSiguiente.update()
+            botonSiguiente.update()
+        if numContexto == 7:
+            contexto = "¿Sera que podras hacer magia?\nA) La magia no existe, no lo intentes\nB) Intentar hacer Magia"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 360)
+            botonA.update()
+            botonB.update()
+        if numContexto == 8:
+            contexto = "Si... supongo que no tiene sentido intentarlo\nGuardas la varita"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
+            botonContinuar.update()
+        if numContexto == 9: #Esta es la opcion A
+            contexto = "¡Funciona! Parece que puedes hacer magia... \npero seria mejor estudiar antes de herir a alguien"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
+            botonSiguiente.update()
+        
         for evento in pygame.event.get():
             if evento.type == QUIT:
                 pygame.quit()
@@ -152,9 +200,13 @@ def Juego(): #esta es la pantalla para el juego
                 
             if evento.type == K_ESCAPE:
                 running = False
-            
+                pygame.quit()
+
             if evento.type == MOUSEBUTTONDOWN:
                 botonSiguiente.checkForInput(pygame.mouse.get_pos())
+                botonContinuar.checkForInput(pygame.mouse.get_pos())
+                botonA.checkForInput(pygame.mouse.get_pos())
+                botonB.checkForInput(pygame.mouse.get_pos())
                 #numContexto = numContexto + 1 | en una version anterior se cambiaba con solo el clic del mouse,p or lo que tuve que moverlo de ahi
             
         pygame.display.update();
@@ -162,5 +214,27 @@ def Juego(): #esta es la pantalla para el juego
 
 def Salir(): #con esto si se le da al boton salir se cierra el juego
     pygame.quit()
+
+def Creditos(): #aqui creditos por recursos que uso y no son mios
+    running = True
+    while running:
+        ventana.fill((0,0,0))
+        CreditosL = "A Lonely Cherry - Pix\nLost Forest - kamera ♪"
+        VariasLineas(ventana, CreditosL, fuenteTexto , (255,255,255), 640, 300)
+
+
+        imagenBoton = pygame.image.load("./src/imagenes/Boton.png") #esta es la imagen del boton
+        imagenBoton = pygame.transform.scale(imagenBoton, (200, 50))
+        botonVolver = Boton(imagenBoton, 360,690, "Volver")
+        botonVolver.update()
+
+        for evento in pygame.event.get():
+            if evento.type == MOUSEBUTTONDOWN:
+                botonVolver.checkForInput(pygame.mouse.get_pos())
             
+            if evento.type == QUIT:
+                pygame.quit()
+
+        pygame.display.update();
+        reloj.tick(60);
 menu() #esto permite que se muestre el menu principal al iniciar el programa.
