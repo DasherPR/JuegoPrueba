@@ -1,4 +1,7 @@
+from cgitb import text
+from unittest import result
 import pygame
+import random
 from pygame.locals import *
 from pygame import mixer_music , mixer
 
@@ -16,9 +19,14 @@ fontTitle = pygame.font.SysFont("Bodoni MT",68) # esta es la fuente del titulo d
 fuenteBotones = pygame.font.SysFont("Bahnschrift",24) # esta es la fuente para los botones
 fuenteTexto = pygame.font.SysFont("Arial",20) # esta es la fuente para el texto
 numContexto = 0
+resultadoDado = 0
+dadoTirado = False
+
 
 def accion(boton): # esta funcion permite dar diferentes funciones a los botones segun su texto
     global numContexto
+    global resultadoDado
+    global dadoTirado
 
     if boton == "Iniciar":
         Juego()
@@ -43,6 +51,11 @@ def accion(boton): # esta funcion permite dar diferentes funciones a los botones
     
     if boton == "Continuar":
         numContexto = numContexto + 2
+    
+    if boton == "Tirar Dado":
+        resultadoDado = random.randint(1,6)
+        dadoTirado = True
+        
 
 class Boton(): #esta clase tuve que buscarla para facilitarme el hacer botones
 	def __init__(self, image, x_pos, y_pos, text_input): #con esto se definen cosas que se le tendran que dar al objeto boton
@@ -126,6 +139,8 @@ def Juego(): #esta es la pantalla para el juego
     mixer.music.play()
     contexto = ""
     global numContexto
+    global dadoTirado
+    global resultadoDado
 
         
 
@@ -136,7 +151,11 @@ def Juego(): #esta es la pantalla para el juego
         botonContinuar = Boton(imagenBoton, 640, 500, "Continuar")
         botonA = Boton(imagenBoton, 550 , 600 , "Opcion A")
         botonB = Boton(imagenBoton, 750 , 600 , "Opcion B")
-        ventana.fill((0,0,0))   
+        botonDado = Boton(imagenBoton, 640 , 300, "Tirar Dado")
+        botonSalir = Boton(imagenBoton, 1130,640, "Salir")
+        ventana.fill((0,0,0))
+        magia = False
+        
         
         #todos estos if son simplemente la historia
         if numContexto == 0:
@@ -186,13 +205,63 @@ def Juego(): #esta es la pantalla para el juego
             botonB.update()
         if numContexto == 8:
             contexto = "Si... supongo que no tiene sentido intentarlo\nGuardas la varita"
-            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 360)
             botonContinuar.update()
+            magia = False
         if numContexto == 9: #Esta es la opcion A
             contexto = "¡Funciona! Parece que puedes hacer magia... \npero seria mejor estudiar antes de herir a alguien"
-            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 360)
             botonSiguiente.update()
-        
+            magia = True
+        if numContexto == 10 and magia == False:
+            contexto = "En el momento en el que guardas la varita sientes algo mirando detras de ti"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 360)
+            botonSiguiente.update()
+        if numContexto == 10 and magia == True:
+            contexto = "Sientes que algo te esta viendo la espalda, por lo que te volteas rapidamente"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 360)
+            botonSiguiente.update()
+        if numContexto == 11:
+            figura = pygame.image.load("./src/imagenes/figuraCerca.png") 
+            figuraTam = pygame.transform.scale(figura,(640,640)); #esto pone la imagen del tamaño necesario
+            ventana.blit(figuraTam, (280, 80))
+            contexto = "Oh... parece que es la figura de nuevo"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 360)
+            botonSiguiente.update()
+        if numContexto == 12:
+            contexto = "Entonces... ¿que quieres hacer? \nA) Escapar\nB) Intentar hacer Magia"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 360)
+            botonA.update()
+            botonB.update()
+        if numContexto == 13:
+            contexto = "Escapar no sera tan sencillo.\n Presiona el boton de tirar dado"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
+            botonDado.update()
+            if dadoTirado:
+                VariasLineas(ventana, (f"El resultado del dado es: \n{resultadoDado}"), fuenteTexto ,(255,255,255), 360, 150)
+                if resultadoDado > 3:
+                    VariasLineas(ventana, "Lograste Escapar" , fuenteTexto , (255,255,255), 360, 500)
+                    botonContinuar.update()
+                if resultadoDado <= 3:
+                    VariasLineas(ventana, "No lograste Escapar" , fuenteTexto , (255,255,255), 360, 500)
+                    botonContinuar.update()
+        if numContexto == 14:
+            contexto = "Hacer magia no sera tan sencillo.\n Presiona el boton de tirar dado"
+            VariasLineas(ventana, contexto, fuenteTexto , (255,255,255), 360, 50)
+            botonDado.update()
+            if dadoTirado:
+                VariasLineas(ventana, (f"El resultado del dado es: \n{resultadoDado}"), fuenteTexto ,(255,255,255), 360, 150)
+                if resultadoDado > 3:
+                    VariasLineas(ventana, "De la punta de la varita sale un haz de luz que ciega a la figura" , fuenteTexto , (255,255,255), 360, 500)
+                    botonSiguiente.update()
+                if resultadoDado <= 3:
+                    VariasLineas(ventana, "De la punta de la varita salen chispas... que no sirven de mucho" , fuenteTexto , (255,255,255), 360, 500)
+                    botonSiguiente.update()
+        if numContexto >= 15:
+            contexto = "Hasta aqui llega la prueba del juego"
+            VariasLineas(ventana, contexto, fontTitle , (255,255,255), 360, 360)
+            botonSalir.update()
+            
         for evento in pygame.event.get():
             if evento.type == QUIT:
                 pygame.quit()
@@ -207,6 +276,8 @@ def Juego(): #esta es la pantalla para el juego
                 botonContinuar.checkForInput(pygame.mouse.get_pos())
                 botonA.checkForInput(pygame.mouse.get_pos())
                 botonB.checkForInput(pygame.mouse.get_pos())
+                botonDado.checkForInput(pygame.mouse.get_pos())
+                botonSalir.checkForInput(pygame.mouse.get_pos())
                 #numContexto = numContexto + 1 | en una version anterior se cambiaba con solo el clic del mouse,p or lo que tuve que moverlo de ahi
             
         pygame.display.update();
